@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8"/>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.10/vue.min.js" integrity="sha256-chlNFSVx3TdcQ2Xlw7SvnbLAavAQLO0Y/LBiWX04viY=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js" integrity="sha256-S1J4GVHHDMiirir9qsXWc8ZWw74PHHafpsHp5PXtjTs=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.js"></script>
+
+        <script src="/js/chip-values.js"></script>
+        <script src="/js/chips.js"></script>
+        <script src="/js/bets.js"></script>
+        <script src="/js/card-table.js"></script>
+        <script src="/js/hand.js"></script>
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.css" />
+        <style>
+            .hand {
+                border: solid 1px black;
+            }
+
+            .turn {
+                background-color: paleturquoise
+            }
+
+            textarea {
+                font-family: courier;
+                min-height: 200px;
+            }
+        </style>
+
+    </head>
+    <body>
+        <div id="app"></div>
+    </body>
+    <script>
+        Vue.component('log',{
+            data: function(){
+                return {
+                    log: null
+                }
+            },            
+            methods: {
+                update: function(){
+                    axios.get('http://localhost:8080/?log=1')
+                    .then((response) => {
+                        this.log = response.data.join("\n");
+                    })
+                }
+            },
+            mounted: function(){
+                this.update();
+            },
+            template: `
+            <textarea class="form-control">{{log}}</textarea>
+            `
+        });
+
+        new Vue({
+            el: '#app',
+            template: `
+                <div>
+                    <card-table ref="table"></card-table>
+                    <hand player="1" @update="$refs.table.update()"></hand>
+                    <hand player="2" @update="$refs.table.update()"></hand>
+                </div>
+            `
+        });
+    </script>
+</html>
